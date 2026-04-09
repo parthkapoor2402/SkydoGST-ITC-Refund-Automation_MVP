@@ -20,5 +20,8 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['e2e/**', 'node_modules/**'],
+    pool: 'forks',
+    maxWorkers: process.env.CI ? 1 : undefined,
+    fileParallelism: !process.env.CI,
   },
 })
