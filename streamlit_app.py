@@ -18,6 +18,7 @@ Optional local env instead of secrets: set GROK_API_KEY before `streamlit run`.
 from __future__ import annotations
 
 import atexit
+import hashlib
 import os
 import subprocess
 import time
@@ -42,8 +43,25 @@ def _grok_fingerprint() -> str:
     return raw[:12] + str(len(raw))
 
 
+def _backend_build_stamp() -> str:
+    """Bust Streamlit cache when server code changes so Node is rebuilt (avoids stale /api routes)."""
+    paths = [
+        REPO_ROOT / "server" / "src" / "app.ts",
+        REPO_ROOT / "server" / "src" / "routes" / "sessionRoutes.ts",
+        REPO_ROOT / "server" / "package.json",
+        REPO_ROOT / "streamlit_app.py",
+    ]
+    h = hashlib.sha256()
+    for p in paths:
+        try:
+            h.update(p.read_bytes())
+        except OSError:
+            h.update(str(p).encode())
+    return h.hexdigest()[:24]
+
+
 @st.cache_resource
-def ensure_backend(_grok_fp: str) -> subprocess.Popen:
+def ensure_backend(_grok_fp: str, _backend_stamp: str) -> subprocess.Popen:
     env = os.environ.copy()
     try:
         gk = st.secrets.get("GROK_API_KEY", "")
@@ -322,7 +340,7 @@ def main() -> None:
     )
 
     try:
-        ensure_backend(_grok_fingerprint())
+        ensure_backend(_grok_fingerprint(), _backend_build_stamp())
     except Exception as e:
         st.error("Could not start the API backend.")
         st.code(str(e), language="text")

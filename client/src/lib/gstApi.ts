@@ -177,6 +177,10 @@ export async function fetchReportPreview(): Promise<unknown> {
 }
 
 export async function postSessionReset(): Promise<void> {
-  const res = await fetch(apiUrl('/api/session/reset'), { method: 'POST' })
+  const res = await fetch(apiUrl('/api/session/reset'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{}',
+  })
   if (!res.ok) throw new Error(await readError(res))
 }

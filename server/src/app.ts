@@ -8,6 +8,11 @@ import { matchingRouter } from './routes/matchingRoutes.js'
 import { reportRouter } from './routes/reportRoutes.js'
 import { sessionRouter } from './routes/sessionRoutes.js'
 import { testResetRouter } from './routes/testResetRoutes.js'
+import { clearBundlePdfBuffers } from './services/bundleBufferStore.js'
+import { clearAllFiras } from './services/firaSessionStore.js'
+import { clearAllInvoices } from './services/invoiceSessionStore.js'
+import { clearMatchSession } from './services/matchingSessionStore.js'
+import { clearReportData } from './services/reportSessionStore.js'
 
 export function createApp(): express.Express {
   const app = express()
@@ -23,6 +28,24 @@ export function createApp(): express.Express {
 
   app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', version: API_VERSION })
+  })
+
+  /** Top-level POSTs so session reset always resolves (some hosts mis-order nested routers). */
+  app.post('/api/session/reset', (_req, res) => {
+    clearAllFiras()
+    clearAllInvoices()
+    clearMatchSession()
+    clearReportData()
+    clearBundlePdfBuffers()
+    res.json({ ok: true })
+  })
+  app.post('/api/session/clear-firas', (_req, res) => {
+    clearAllFiras()
+    res.json({ ok: true })
+  })
+  app.post('/api/session/clear-invoices', (_req, res) => {
+    clearAllInvoices()
+    res.json({ ok: true })
   })
 
   app.use('/api/fira', firaRouter)
