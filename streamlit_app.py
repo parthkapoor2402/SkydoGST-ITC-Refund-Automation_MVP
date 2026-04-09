@@ -51,15 +51,18 @@ def ensure_backend(_grok_fp: str) -> subprocess.Popen:
             env["GROK_API_KEY"] = str(gk)
     except Exception:
         pass
-    env.setdefault("NODE_ENV", "production")
     env["PORT"] = "3001"
     env.setdefault("E2E_MOCK_GROK", "0")
+
+    # npm ci skips devDependencies when NODE_ENV=production — TypeScript (tsc) is a devDep.
+    env_install = {**env, "NODE_ENV": "development"}
+    env_run = {**env, "NODE_ENV": "production"}
 
     with st.spinner("Installing dependencies (first run can take several minutes)…"):
         r = subprocess.run(
             ["npm", "ci"],
             cwd=REPO_ROOT,
-            env=env,
+            env=env_install,
             capture_output=True,
             text=True,
             timeout=900,
@@ -73,7 +76,7 @@ def ensure_backend(_grok_fp: str) -> subprocess.Popen:
         r = subprocess.run(
             ["npm", "run", "build", "-w", "server"],
             cwd=REPO_ROOT,
-            env=env,
+            env=env_install,
             capture_output=True,
             text=True,
             timeout=600,
@@ -86,7 +89,7 @@ def ensure_backend(_grok_fp: str) -> subprocess.Popen:
     proc = subprocess.Popen(
         ["npm", "run", "start", "-w", "server"],
         cwd=REPO_ROOT,
-        env=env,
+        env=env_run,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
