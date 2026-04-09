@@ -6,7 +6,7 @@ This web app helps Indian exporters who receive **FIRAs** (Foreign Inward Remitt
 
 ## Why It Exists
 
-Many eligible **GST ITC refunds**—often **₹50,000+** per quarter for active exporters—stay **unclaimed** because **manually pairing FIRAs to invoices** is slow, error-prone, and easy to defer. This MVP automates the **first mile**: normalized uploads, **rule-based + fuzzy matching** with a **Grok (xAI) fallback** for ambiguous cases, **RFD-01 Statement 3B–oriented rows**, and a **CA-ready ZIP** so filing prep is repeatable and auditable.
+Many eligible **GST ITC refunds**—often **₹50,000+** per quarter for active exporters stay **unclaimed** because **manually pairing FIRAs to invoices** is slow, error-prone, and easy to defer. This MVP automates the **first mile**: normalized uploads, **rule-based + fuzzy matching** with a **Grok (xAI) fallback** for ambiguous cases, **RFD-01 Statement 3B–oriented rows**, and a **CA-ready ZIP** so filing prep is repeatable and auditable.
 
 ## Quick Start
 
