@@ -1,0 +1,22 @@
+{
+  "invoiceNumber": "INV-HP-02",
+  "invoiceDate": "2025-03-16",
+  "dueDate": "2025-03-26",
+  "exporterGSTIN": "27AABCU9603R1ZX",
+  "lutNumber": "AD27032500001234",
+  "client": { "name": "ACME CORPORATION", "country": "United States" },
+  "lineItems": [
+    {
+      "description": "Export services",
+      "sacCode": "998313",
+      "quantity": 1,
+      "unitPrice": 236000,
+      "currency": "INR"
+    }
+  ],
+  "totalAmount": { "value": 236000, "currency": "INR" },
+  "taxableValue": { "inr": 200000 },
+  "igstAmount": 36000,
+  "paymentStatus": "paid",
+  "paymentReference": "NEFT-UTR-HP-02-IN"
+}

@@ -1,0 +1,21 @@
+{
+  "invoiceNumber": "INV-HP-03",
+  "invoiceDate": "2025-03-12",
+  "dueDate": "2025-03-22",
+  "exporterGSTIN": "27AABCU9603R1ZX",
+  "lutNumber": "AD27032500001234",
+  "client": { "name": "Different Entity Beta Pte Ltd", "country": "Singapore" },
+  "lineItems": [
+    {
+      "description": "Consulting",
+      "sacCode": "998314",
+      "quantity": 1,
+      "unitPrice": 50000,
+      "currency": "INR"
+    }
+  ],
+  "totalAmount": { "value": 50000, "currency": "INR" },
+  "taxableValue": { "inr": 45000 },
+  "igstAmount": 5000,
+  "paymentStatus": "paid"
+}

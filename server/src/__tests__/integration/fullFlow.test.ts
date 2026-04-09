@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import request from 'supertest'
@@ -13,7 +14,23 @@ import { clearReportData } from '../../services/reportSessionStore.js'
 import type { ApprovedMatch, FiraRecord, InvoiceRecord } from '../../types/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const e2eFixtures = path.join(__dirname, '../../../../e2e/fixtures')
+
+/** Prefer server-local copies so tests pass without monorepo `e2e/` (e.g. server-only deploy contexts). */
+function resolveHappyPathFixturesDir(): string {
+  const serverScoped = path.join(__dirname, '../../../tests/fixtures')
+  if (fs.existsSync(path.join(serverScoped, 'happy', 'fira-hp-01.json'))) {
+    return serverScoped
+  }
+  const monorepoE2e = path.join(__dirname, '../../../../e2e/fixtures')
+  if (fs.existsSync(path.join(monorepoE2e, 'happy', 'fira-hp-01.json'))) {
+    return monorepoE2e
+  }
+  throw new Error(
+    'Integration fixtures missing: add server/tests/fixtures/happy/*.json or checkout repo e2e/fixtures/happy.',
+  )
+}
+
+const happyFixtures = resolveHappyPathFixturesDir()
 
 function mapFira(sf: {
   id: string
@@ -111,9 +128,9 @@ describe('full API flow', () => {
 
   it('upload → list → match → approve → report → zip', async () => {
     const firaFiles = [
-      path.join(e2eFixtures, 'happy', 'fira-hp-01.json'),
-      path.join(e2eFixtures, 'happy', 'fira-hp-02.json'),
-      path.join(e2eFixtures, 'happy', 'fira-hp-03.json'),
+      path.join(happyFixtures, 'happy', 'fira-hp-01.json'),
+      path.join(happyFixtures, 'happy', 'fira-hp-02.json'),
+      path.join(happyFixtures, 'happy', 'fira-hp-03.json'),
     ]
     let upFira = request(app).post('/api/fira/upload')
     for (const f of firaFiles) {
@@ -123,9 +140,9 @@ describe('full API flow', () => {
     expect(upFiraRes.body.errors ?? []).toEqual([])
 
     const invFiles = [
-      path.join(e2eFixtures, 'happy', 'inv-hp-01.json'),
-      path.join(e2eFixtures, 'happy', 'inv-hp-02.json'),
-      path.join(e2eFixtures, 'happy', 'inv-hp-03.json'),
+      path.join(happyFixtures, 'happy', 'inv-hp-01.json'),
+      path.join(happyFixtures, 'happy', 'inv-hp-02.json'),
+      path.join(happyFixtures, 'happy', 'inv-hp-03.json'),
     ]
     let upInv = request(app).post('/api/invoices/upload')
     for (const f of invFiles) {

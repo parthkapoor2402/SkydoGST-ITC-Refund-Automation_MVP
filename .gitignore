@@ -21,3 +21,10 @@ test-results-client.txt
 
 # Build & archives
 *.zip
+
+# Python / Streamlit
+__pycache__/
+*.py[cod]
+.python-version
+.venv/
+venv/
