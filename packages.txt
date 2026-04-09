@@ -1,3 +1,2 @@
-# Apt packages for Streamlit Community Cloud (Node.js API subprocess)
 nodejs
 npm
