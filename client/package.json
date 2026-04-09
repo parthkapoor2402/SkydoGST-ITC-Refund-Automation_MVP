@@ -8,8 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run",
-    "test:ui": "vitest --ui",
+    "test": "npx vitest run",
+    "test:ui": "npx vitest --ui",
     "test:e2e": "playwright test --config ../playwright.config.mjs"
   },
   "dependencies": {

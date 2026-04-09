@@ -22,8 +22,10 @@ export default defineConfig({
     cwd: rootDir,
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
+    timeout: 180_000,
     env: {
       ...process.env,
+      NODE_ENV: 'development',
       ENABLE_TEST_ROUTES: '1',
       E2E_MOCK_GROK: '1',
     },
