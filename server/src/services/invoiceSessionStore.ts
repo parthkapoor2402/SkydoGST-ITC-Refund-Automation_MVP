@@ -24,6 +24,19 @@ export function deleteInvoice(id: string): boolean {
   return invoiceById.delete(id)
 }
 
+/** Remove any stored invoice with this invoice number. Latest upload wins. */
+export function deleteInvoiceByInvoiceNumber(invoiceNumber: string): void {
+  const toRemove: string[] = []
+  for (const [id, s] of invoiceById) {
+    if (s.parsed.invoiceNumber === invoiceNumber) {
+      toRemove.push(id)
+    }
+  }
+  for (const id of toRemove) {
+    invoiceById.delete(id)
+  }
+}
+
 export function clearAllInvoices(): void {
   invoiceById.clear()
 }

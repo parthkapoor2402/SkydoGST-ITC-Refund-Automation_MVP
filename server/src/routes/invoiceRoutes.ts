@@ -8,6 +8,7 @@ import {
 } from '../modules/invoiceParser.js'
 import {
   deleteInvoice,
+  deleteInvoiceByInvoiceNumber,
   listInvoices,
   storeInvoice,
 } from '../services/invoiceSessionStore.js'
@@ -42,6 +43,7 @@ invoiceRouter.post(
           errors.push({ file: name, error: r.error })
           continue
         }
+        deleteInvoiceByInvoiceNumber(r.invoiceNumber)
         const id = randomUUID()
         storeInvoice({ id, parsed: r, sourceFileName: name })
         saved.push({ id, parsed: r })
@@ -73,6 +75,7 @@ invoiceRouter.post('/parse-csv', (req: Request, res: Response) => {
   const rows = parseInvoiceFromCSV(csv)
   const saved: { id: string; parsed: unknown }[] = []
   for (const parsed of rows) {
+    deleteInvoiceByInvoiceNumber(parsed.invoiceNumber)
     const id = randomUUID()
     storeInvoice({ id, parsed, sourceFileName: 'bulk.csv' })
     saved.push({ id, parsed })

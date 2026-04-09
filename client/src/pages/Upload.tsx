@@ -11,6 +11,7 @@ import {
   fetchInvoiceList,
   parseFiraCsv,
   parseInvoiceCsv,
+  postSessionReset,
   queryKeys,
   uploadFiraJsonFiles,
   uploadInvoiceJsonFiles,
@@ -46,6 +47,7 @@ export default function Upload() {
   const syncTaxPeriodFromQuarter = useGSTStore((s) => s.syncTaxPeriodFromQuarter)
   const setFiras = useGSTStore((s) => s.setFiras)
   const setInvoices = useGSTStore((s) => s.setInvoices)
+  const clearWorkflowData = useGSTStore((s) => s.clearWorkflowData)
 
   const firaQuery = useQuery({
     queryKey: queryKeys.firas,
@@ -132,6 +134,19 @@ export default function Upload() {
     onError: (e: Error) => toast.error(e.message),
   })
 
+  const clearSessionMutation = useMutation({
+    mutationFn: postSessionReset,
+    onSuccess: () => {
+      clearWorkflowData()
+      void queryClient.invalidateQueries({ queryKey: queryKeys.firas })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.invoices })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.matchRows })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.reportPreview })
+      toast.success('Session cleared. You can upload again.')
+    },
+    onError: (e: Error) => toast.error(e.message),
+  })
+
   const onFiraAccepted = useCallback(
     (files: File[]) => {
       firaMutation.mutate(files)
@@ -168,19 +183,45 @@ export default function Upload() {
     setInvoices(invoiceRecords)
   }, [firaRecords, invoiceRecords, setFiras, setInvoices])
 
-  const busy = firaMutation.isPending || invoiceMutation.isPending
+  const busy =
+    firaMutation.isPending ||
+    invoiceMutation.isPending ||
+    clearSessionMutation.isPending
   const canStart = firaCount > 0 && invoiceCount > 0 && !busy
+
+  const onClearSession = useCallback(() => {
+    if (
+      !window.confirm(
+        'Clear all FIRAs, invoices, match results, and generated report data for this session? This cannot be undone.',
+      )
+    ) {
+      return
+    }
+    clearSessionMutation.mutate()
+  }, [clearSessionMutation])
 
   return (
     <div className="mx-auto max-w-6xl space-y-[var(--space-8)]">
-      <header>
-        <h2 className="text-[length:var(--text-2xl)] font-semibold tracking-tight text-[var(--color-text-primary)]">
-          Step 1: Upload documents
-        </h2>
-        <p className="mt-1 max-w-3xl text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
-          Pull exports from Skydo, upload them here, then go to matching. Most
-          freelancers finish this step in about two minutes.
-        </p>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="text-[length:var(--text-2xl)] font-semibold tracking-tight text-[var(--color-text-primary)]">
+            Step 1: Upload documents
+          </h2>
+          <p className="mt-1 max-w-3xl text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
+            Pull exports from Skydo, upload them here, then go to matching. Most
+            freelancers finish this step in about two minutes.
+          </p>
+        </div>
+        <Button
+          type="button"
+          variant="secondary"
+          className="shrink-0 self-start"
+          disabled={busy}
+          loading={clearSessionMutation.isPending}
+          onClick={onClearSession}
+        >
+          Clear session / Start over
+        </Button>
       </header>
 
       <Card elevation="raised" header="Progress" padding="md">

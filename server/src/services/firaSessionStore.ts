@@ -24,6 +24,19 @@ export function deleteFira(id: string): boolean {
   return firaById.delete(id)
 }
 
+/** Remove any stored FIRA with this reference (UTR / reference id). Latest upload wins. */
+export function deleteFiraByReferenceNumber(referenceNumber: string): void {
+  const toRemove: string[] = []
+  for (const [id, s] of firaById) {
+    if (s.parsed.referenceNumber === referenceNumber) {
+      toRemove.push(id)
+    }
+  }
+  for (const id of toRemove) {
+    firaById.delete(id)
+  }
+}
+
 export function clearAllFiras(): void {
   firaById.clear()
 }

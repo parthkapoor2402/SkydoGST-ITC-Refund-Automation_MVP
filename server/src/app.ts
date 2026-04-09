@@ -6,6 +6,7 @@ import { firaRouter } from './routes/firaRoutes.js'
 import { invoiceRouter } from './routes/invoiceRoutes.js'
 import { matchingRouter } from './routes/matchingRoutes.js'
 import { reportRouter } from './routes/reportRoutes.js'
+import { sessionRouter } from './routes/sessionRoutes.js'
 import { testResetRouter } from './routes/testResetRoutes.js'
 
 export function createApp(): express.Express {
@@ -29,6 +30,7 @@ export function createApp(): express.Express {
   app.use('/api/match', matchingRouter)
   app.use('/api/report', reportRouter)
   app.use('/api/download', downloadRouter)
+  app.use('/api/session', sessionRouter)
 
   /** E2E reset + local dev: enabled whenever not in production (Playwright reuseExistingServer often skips env flags). */
   const testRoutesOn =

@@ -123,6 +123,21 @@ def ensure_backend(_grok_fp: str) -> subprocess.Popen:
     raise RuntimeError("API did not become healthy in time.")
 
 
+def api_clear_firas() -> None:
+    r = requests.post(f"{API}/api/session/clear-firas", timeout=60)
+    r.raise_for_status()
+
+
+def api_clear_invoices() -> None:
+    r = requests.post(f"{API}/api/session/clear-invoices", timeout=60)
+    r.raise_for_status()
+
+
+def api_session_reset() -> None:
+    r = requests.post(f"{API}/api/session/reset", timeout=60)
+    r.raise_for_status()
+
+
 def api_upload_fira(files: list[tuple[str, bytes]]) -> dict[str, Any]:
     mp = [("files", (name, data, "application/json")) for name, data in files]
     r = requests.post(f"{API}/api/fira/upload", files=mp, timeout=120)
@@ -328,6 +343,11 @@ def main() -> None:
     )
 
     with tab_up:
+        if st.session_state.pop("streamlit_reset_done", False):
+            st.success(
+                "All session data cleared: FIRAs, invoices, match results, and report."
+            )
+
         st.subheader("Upload FIRA and invoice JSON files")
         ff = st.file_uploader(
             "FIRA JSON files",
@@ -338,11 +358,15 @@ def main() -> None:
         if ff and st.button("Upload FIRA files", key="btn_fira"):
             pairs = [(f.name, f.getvalue()) for f in ff]
             try:
+                api_clear_firas()
                 res = api_upload_fira(pairs)
                 err = res.get("errors") or []
                 if err:
                     st.warning(err)
-                st.success(f"Saved {len(res.get('saved') or [])} FIRA record(s).")
+                nf = len(api_list_firas())
+                st.success(
+                    f"Uploaded FIRA set replaced. Session: **{nf}** FIRA(s) (deduplicated by reference)."
+                )
             except requests.HTTPError as e:
                 st.error(e.response.text if e.response is not None else str(e))
 
@@ -355,20 +379,32 @@ def main() -> None:
         if inf and st.button("Upload invoice files", key="btn_inv"):
             pairs = [(f.name, f.getvalue()) for f in inf]
             try:
+                api_clear_invoices()
                 res = api_upload_invoices(pairs)
                 err = res.get("errors") or []
                 if err:
                     st.warning(err)
-                st.success(f"Saved {len(res.get('saved') or [])} invoice(s).")
+                ni = len(api_list_invoices())
+                st.success(
+                    f"Uploaded invoice set replaced. Session: **{ni}** invoice(s) (deduplicated by invoice #)."
+                )
             except requests.HTTPError as e:
                 st.error(e.response.text if e.response is not None else str(e))
 
         try:
             nf = len(api_list_firas())
             ni = len(api_list_invoices())
-            st.info(f"Session: **{nf}** FIRA(s), **{ni}** invoice(s) loaded.")
+            st.info(f"Session: **{nf}** FIRAs, **{ni}** invoices loaded.")
         except requests.HTTPError as e:
             st.caption(str(e))
+
+        if st.button("🔄 Reset everything", key="btn_reset_all"):
+            try:
+                api_session_reset()
+                st.session_state["streamlit_reset_done"] = True
+                st.rerun()
+            except requests.HTTPError as e:
+                st.error(e.response.text if e.response is not None else str(e))
 
     with tab_mt:
         st.subheader("Run matcher, then approve or override rows")

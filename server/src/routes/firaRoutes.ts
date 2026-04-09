@@ -4,6 +4,7 @@ import multer from 'multer'
 import { isParseError, parseFIRA, parseFIRAFromCSV } from '../modules/firaParser.js'
 import {
   deleteFira,
+  deleteFiraByReferenceNumber,
   listFiras,
   storeFira,
 } from '../services/firaSessionStore.js'
@@ -38,6 +39,7 @@ firaRouter.post(
           errors.push({ file: name, error: r.error })
           continue
         }
+        deleteFiraByReferenceNumber(r.referenceNumber)
         const id = randomUUID()
         storeFira({ id, parsed: r, sourceFileName: name })
         saved.push({ id, parsed: r })
@@ -69,6 +71,7 @@ firaRouter.post('/parse-csv', (req: Request, res: Response) => {
   const rows = parseFIRAFromCSV(csv)
   const saved: { id: string; parsed: unknown }[] = []
   for (const parsed of rows) {
+    deleteFiraByReferenceNumber(parsed.referenceNumber)
     const id = randomUUID()
     storeFira({ id, parsed, sourceFileName: 'bulk.csv' })
     saved.push({ id, parsed })

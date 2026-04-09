@@ -35,6 +35,8 @@ export interface GSTState {
   addSkippedMatchRow: (id: string) => void
   removeSkippedMatchRow: (id: string) => void
   setCurrentStep: (step: AppStep) => void
+  /** Clears uploads, matches, and report in the client store; keeps tax period / FY. */
+  clearWorkflowData: () => void
   reset: () => void
 }
 
@@ -78,5 +80,16 @@ export const useGSTStore = create<GSTState>((set, get) => ({
       skippedMatchRowIds: s.skippedMatchRowIds.filter((x) => x !== id),
     })),
   setCurrentStep: (currentStep) => set({ currentStep }),
+  clearWorkflowData: () =>
+    set({
+      firas: [],
+      invoices: [],
+      matchResults: [],
+      rfdExport: null,
+      statement3BRows: null,
+      skippedMatchRowIds: [],
+      sessionId: null,
+      currentStep: 'upload',
+    }),
   reset: () => set(initialState),
 }))
