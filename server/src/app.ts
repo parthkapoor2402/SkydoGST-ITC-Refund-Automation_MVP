@@ -30,15 +30,20 @@ export function createApp(): express.Express {
     res.json({ status: 'ok', version: API_VERSION })
   })
 
-  /** Top-level POSTs so session reset always resolves (some hosts mis-order nested routers). */
-  app.post('/api/session/reset', (_req, res) => {
+  const runFullSessionReset: express.RequestHandler = (_req, res) => {
     clearAllFiras()
     clearAllInvoices()
     clearMatchSession()
     clearReportData()
     clearBundlePdfBuffers()
     res.json({ ok: true })
-  })
+  }
+
+  /** POST + GET: Streamlit uses POST; GET is a fallback if POST is stripped by a proxy. */
+  app.post('/api/session/reset', runFullSessionReset)
+  app.get('/api/session/reset', runFullSessionReset)
+
+  /** Top-level POSTs so session routes always resolve. */
   app.post('/api/session/clear-firas', (_req, res) => {
     clearAllFiras()
     res.json({ ok: true })

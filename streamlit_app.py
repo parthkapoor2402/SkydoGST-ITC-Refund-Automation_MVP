@@ -52,12 +52,48 @@ def _backend_build_stamp() -> str:
         REPO_ROOT / "streamlit_app.py",
     ]
     h = hashlib.sha256()
+    h.update(b"spawn_kill_port_v1")
     for p in paths:
         try:
             h.update(p.read_bytes())
         except OSError:
             h.update(str(p).encode())
     return h.hexdigest()[:24]
+
+
+def _free_listeners_on_port(port: int) -> None:
+    """Release :port so a new Node server can bind (avoids stale API without /api/session/*)."""
+    p = str(port)
+    try:
+        if os.name == "nt":
+            r = subprocess.run(
+                ["netstat", "-ano"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            for line in (r.stdout or "").splitlines():
+                if f":{p}" not in line or "LISTENING" not in line.upper():
+                    continue
+                parts = line.split()
+                if not parts:
+                    continue
+                pid = parts[-1]
+                if pid.isdigit():
+                    subprocess.run(
+                        ["taskkill", "/F", "/PID", pid],
+                        capture_output=True,
+                        timeout=15,
+                    )
+        else:
+            subprocess.run(
+                f"fuser -k {p}/tcp 2>/dev/null || true",
+                shell=True,
+                timeout=25,
+            )
+    except (OSError, subprocess.TimeoutExpired, subprocess.SubprocessError):
+        pass
+    time.sleep(0.6)
 
 
 @st.cache_resource
@@ -103,6 +139,8 @@ def ensure_backend(_grok_fp: str, _backend_stamp: str) -> subprocess.Popen:
             raise RuntimeError(
                 "server build failed:\n" + (r.stderr or r.stdout or "")[:8000]
             )
+
+    _free_listeners_on_port(int(env["PORT"]))
 
     proc = subprocess.Popen(
         ["npm", "run", "start", "-w", "server"],
@@ -152,7 +190,19 @@ def api_clear_invoices() -> None:
 
 
 def api_session_reset() -> None:
-    r = requests.post(f"{API}/api/session/reset", timeout=60)
+    url = f"{API}/api/session/reset"
+    r = requests.post(
+        url,
+        timeout=60,
+        headers={"Content-Type": "application/json"},
+        json={},
+    )
+    if r.ok:
+        return
+    if r.status_code == 404 or "Cannot POST" in (r.text or ""):
+        g = requests.get(url, timeout=60)
+        g.raise_for_status()
+        return
     r.raise_for_status()
 
 

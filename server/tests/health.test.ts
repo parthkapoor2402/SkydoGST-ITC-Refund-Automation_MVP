@@ -23,6 +23,12 @@ describe('health', () => {
     expect(res.body).toEqual({ ok: true })
   })
 
+  it('GET /api/session/reset clears session', async () => {
+    const res = await request(app).get('/api/session/reset')
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ ok: true })
+  })
+
   it('POST /api/session/clear-firas responds ok', async () => {
     const res = await request(app).post('/api/session/clear-firas')
     expect(res.status).toBe(200)

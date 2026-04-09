@@ -177,10 +177,17 @@ export async function fetchReportPreview(): Promise<unknown> {
 }
 
 export async function postSessionReset(): Promise<void> {
-  const res = await fetch(apiUrl('/api/session/reset'), {
+  const url = apiUrl('/api/session/reset')
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: '{}',
   })
-  if (!res.ok) throw new Error(await readError(res))
+  if (res.ok) return
+  if (res.status === 404) {
+    const g = await fetch(url, { method: 'GET' })
+    if (!g.ok) throw new Error(await readError(g))
+    return
+  }
+  throw new Error(await readError(res))
 }
