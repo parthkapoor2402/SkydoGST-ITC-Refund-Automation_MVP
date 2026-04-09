@@ -1,0 +1,9 @@
+{
+  "documentType": "FIRA",
+  "utr": "UTR-ERR-GOOD",
+  "remitterName": "Valid Remitter",
+  "remitterCountry": "United States",
+  "amount": { "currency": "USD", "value": 100 },
+  "creditedAmount": { "value": 8300, "currency": "INR" },
+  "valueDate": "01/01/2025"
+}

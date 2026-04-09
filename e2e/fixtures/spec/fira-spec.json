@@ -1,0 +1,9 @@
+{
+  "documentType": "FIRA",
+  "utr": "SPEC-UTR-999",
+  "remitterName": "Spec Exporter Client",
+  "remitterCountry": "Germany",
+  "amount": { "currency": "EUR", "value": 1 },
+  "creditedAmount": { "value": 250000, "currency": "INR" },
+  "valueDate": "20/06/2025"
+}

@@ -1,0 +1,20 @@
+{
+  "invoiceNumber": "INV-GROK-A",
+  "invoiceDate": "2025-04-02",
+  "exporterGSTIN": "27AABCU9603R1ZX",
+  "lutNumber": "AD27032500001234",
+  "client": { "name": "Alpha US Client", "country": "United States" },
+  "lineItems": [
+    {
+      "description": "Services",
+      "sacCode": "998313",
+      "quantity": 1,
+      "unitPrice": 90000,
+      "currency": "INR"
+    }
+  ],
+  "totalAmount": { "value": 90000, "currency": "INR" },
+  "taxableValue": { "inr": 80000 },
+  "igstAmount": 10000,
+  "paymentStatus": "paid"
+}

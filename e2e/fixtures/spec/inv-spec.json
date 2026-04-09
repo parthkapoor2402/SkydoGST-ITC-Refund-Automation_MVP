@@ -1,0 +1,21 @@
+{
+  "invoiceNumber": "INV-SPEC-001",
+  "invoiceDate": "2025-06-21",
+  "exporterGSTIN": "27AABCU9603R1ZX",
+  "lutNumber": "AD27032500001234",
+  "client": { "name": "SPEC HOLDING GMBH", "country": "Germany" },
+  "lineItems": [
+    {
+      "description": "Engineering",
+      "sacCode": "998313",
+      "quantity": 1,
+      "unitPrice": 250000,
+      "currency": "INR"
+    }
+  ],
+  "totalAmount": { "value": 250000, "currency": "INR" },
+  "taxableValue": { "inr": 250000 },
+  "igstAmount": 0,
+  "paymentStatus": "paid",
+  "paymentReference": "SPEC-UTR-999"
+}

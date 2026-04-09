@@ -1,0 +1,20 @@
+{
+  "invoiceNumber": "INV-MO-IN",
+  "invoiceDate": "2025-05-06",
+  "exporterGSTIN": "27AABCU9603R1ZX",
+  "lutNumber": "AD27032500001234",
+  "client": { "name": "Mumbai Services Pvt Ltd", "country": "India" },
+  "lineItems": [
+    {
+      "description": "IT services",
+      "sacCode": "998313",
+      "quantity": 1,
+      "unitPrice": 75000,
+      "currency": "INR"
+    }
+  ],
+  "totalAmount": { "value": 75000, "currency": "INR" },
+  "taxableValue": { "inr": 70000 },
+  "igstAmount": 5000,
+  "paymentStatus": "paid"
+}

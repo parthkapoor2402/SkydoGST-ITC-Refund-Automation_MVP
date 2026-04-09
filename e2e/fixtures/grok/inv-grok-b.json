@@ -1,0 +1,20 @@
+{
+  "invoiceNumber": "INV-GROK-B",
+  "invoiceDate": "2025-04-03",
+  "exporterGSTIN": "27AABCU9603R1ZX",
+  "lutNumber": "AD27032500001234",
+  "client": { "name": "Beta UK Client", "country": "United Kingdom" },
+  "lineItems": [
+    {
+      "description": "Services",
+      "sacCode": "998313",
+      "quantity": 1,
+      "unitPrice": 89000,
+      "currency": "INR"
+    }
+  ],
+  "totalAmount": { "value": 89000, "currency": "INR" },
+  "taxableValue": { "inr": 79000 },
+  "igstAmount": 10000,
+  "paymentStatus": "paid"
+}

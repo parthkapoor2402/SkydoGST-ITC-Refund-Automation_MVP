@@ -1,0 +1,9 @@
+{
+  "documentType": "FIRA",
+  "utr": "UTR-HP-01",
+  "remitterName": "Acme Corp USA",
+  "remitterCountry": "United States",
+  "amount": { "currency": "USD", "value": 1 },
+  "creditedAmount": { "value": 118000, "currency": "INR" },
+  "valueDate": "15/03/2025"
+}
